@@ -1,3 +1,4 @@
+import type { PraxisConfig } from "@/models/praxis-config.js";
 import type { EvalUnit, Service, ValidationDomain } from "@/types.js";
 
 import fg from "fast-glob";
@@ -18,12 +19,11 @@ interface ResolveUnitsInput {
  * `paths:` when declared, otherwise the spec's sibling .md files.
  */
 const resolveUnitsService: Service<ResolveUnitsInput, EvalUnit[]> = (cfg, { domain }) => {
-  const specFilePattern = cfg.specFilePattern;
   const shielded = [...cfg.absoluteIgnore, ...domain.excludes];
 
   if (domain.cohort === "by_directory") {
     return (domain.targetDirs ?? [])
-      .map((dir) => ({ path: dir, files: members(dir, shielded, specFilePattern) }))
+      .map((dir) => ({ path: dir, files: members(cfg, dir, shielded) }))
       .filter((unit) => unit.files.length > 0);
   }
 
@@ -31,7 +31,7 @@ const resolveUnitsService: Service<ResolveUnitsInput, EvalUnit[]> = (cfg, { doma
     return domain.targetFiles.map((file) => ({ path: file, files: [file] }));
   }
 
-  return targetsIn("*.md", domain.dir, shielded, specFilePattern).map((file) => ({
+  return targetsIn(cfg, "*.md", domain.dir, shielded).map((file) => ({
     path: file,
     files: [file],
   }));
@@ -40,18 +40,13 @@ const resolveUnitsService: Service<ResolveUnitsInput, EvalUnit[]> = (cfg, { doma
 export default resolveUnitsService;
 
 /** A cohort directory's member files, sorted. */
-function members(dir: string, shielded: string[], specFilePattern: string): string[] {
-  return targetsIn("**/*", dir, shielded, specFilePattern).sort();
+function members(cfg: PraxisConfig, dir: string, shielded: string[]): string[] {
+  return targetsIn(cfg, "**/*", dir, shielded).sort();
 }
 
 /** Files matching a pattern in a directory, minus specs and templates. */
-function targetsIn(
-  pattern: string,
-  cwd: string,
-  ignore: string[],
-  specFilePattern: string,
-): string[] {
+function targetsIn(cfg: PraxisConfig, pattern: string, cwd: string, ignore: string[]): string[] {
   return fg
     .sync(pattern, { cwd, onlyFiles: true, absolute: true, dot: true, ignore })
-    .filter((file) => isContentFile(file, specFilePattern));
+    .filter((file) => isContentFile(file, cfg.specFilePattern, cfg.templateFilePattern));
 }

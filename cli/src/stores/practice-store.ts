@@ -4,7 +4,7 @@ import type { AddDocumentResult, StoreProblem } from "@/types.js";
 import fg from "fast-glob";
 
 import { errors } from "@/helpers/errors-helper.js";
-import { exists, matchesFilename, readText, writeText } from "@/helpers/files-helper.js";
+import { exists, isContentFile, readText, writeText } from "@/helpers/files-helper.js";
 import { baseName, joinPath, relativePath } from "@/helpers/paths-helper.js";
 import { kebabToTitleCase } from "@/helpers/text-helper.js";
 import { PracticeFile } from "@/models/practice-file.js";
@@ -22,12 +22,14 @@ export class PracticeStore {
   private readonly root: string;
   private readonly practicesDir: string;
   private readonly specFilePattern: string;
+  private readonly templateFilePattern: string | false;
   private readonly ignore: string[];
 
   constructor(cfg: PraxisConfig) {
     this.root = cfg.root;
     this.practicesDir = cfg.practicesDir;
     this.specFilePattern = cfg.specFilePattern;
+    this.templateFilePattern = cfg.templateFilePattern;
     this.ignore = cfg.absoluteIgnore;
   }
 
@@ -42,8 +44,7 @@ export class PracticeStore {
         absolute: true,
         ignore: this.ignore,
       })
-      .filter((path) => !matchesFilename(path, this.specFilePattern))
-      .filter((path) => !baseName(path).startsWith("_"))
+      .filter((path) => isContentFile(path, this.specFilePattern, this.templateFilePattern))
       .sort();
   }
 

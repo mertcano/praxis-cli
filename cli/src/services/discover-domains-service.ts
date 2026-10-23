@@ -52,7 +52,7 @@ function domainFor(store: SpecStore, specPath: string, cfg: PraxisConfig): Valid
   } else if (spec.paths.length > 0) {
     domain.targetFiles = fg
       .sync(spec.paths, { cwd: root, onlyFiles: true, absolute: true, dot: true, ignore })
-      .filter((file) => isContentFile(file, cfg.specFilePattern));
+      .filter((file) => isContentFile(file, cfg.specFilePattern, cfg.templateFilePattern));
   }
 
   return domain;

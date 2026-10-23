@@ -15,6 +15,7 @@ export interface RawConfig {
   curator?: Partial<CuratorConfig>;
   /** Filename or glob pattern for spec files (default: "README.md"). */
   specFilePattern?: string;
+  templateFilePattern?: string | false;
 }
 
 /** Raw plugin entry as it appears in config JSON. */

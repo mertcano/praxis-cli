@@ -169,11 +169,15 @@ export function matchesFilename(filePathOrName: string, pattern: string): boolea
  *
  * Two exclusions, both pure name math: the file matching `metaPattern` —
  * a directory's index, spec or README, which describes its neighbours
- * rather than being one of them — and anything underscore-prefixed, the
- * conventional marker for a template or scratch file.
+ * rather than being one of them — and the file matching `templatePattern`.
  */
-export function isContentFile(path: string, metaPattern: string): boolean {
+export function isContentFile(
+  path: string,
+  metaPattern: string,
+  templatePattern: string | false,
+): boolean {
   const name = basename(path);
+  const isTemplate = templatePattern !== false && matchesFilename(name, templatePattern);
 
-  return !matchesFilename(name, metaPattern) && !name.startsWith("_");
+  return !matchesFilename(name, metaPattern) && !isTemplate;
 }

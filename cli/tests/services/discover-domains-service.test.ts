@@ -63,6 +63,17 @@ describe("discoverDomainsService", () => {
     expect(targets.some((t) => t.endsWith("/c.ts"))).toBe(false);
   });
 
+  it("targets an underscore-prefixed file outside the template pattern, like a Rails partial", () => {
+    const root = project({
+      "src/views/README.md": '---\npaths:\n  - "src/views/*.erb"\n---\n\n# Views\n',
+      "src/views/show.html.erb": "<p>show</p>\n",
+      "src/views/_form.html.erb": "<form></form>\n",
+    });
+    const targets = domains(root)[0]?.targetFiles ?? [];
+
+    expect(targets).toHaveLength(2);
+  });
+
   it("shields `excludes:` from the target list — the reviewer never sees them", () => {
     const root = project({
       "src/services/README.md":

@@ -51,7 +51,9 @@ const expandGlobsService: Service<ExpandGlobsInput, Promise<GlobExpansion[]>> = 
       return {
         pattern,
         isGlob: true,
-        matches: matched.filter((match) => isContentFile(match, cfg.specFilePattern)).sort(),
+        matches: matched
+          .filter((match) => isContentFile(match, cfg.specFilePattern, cfg.templateFilePattern))
+          .sort(),
       };
     }),
   );

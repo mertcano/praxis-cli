@@ -3,7 +3,8 @@ walking up from cwd to the nearest .praxis/ directory. Key fields:
 version (the praxis version this project pins), sources (the
 directories scanned for specs — a full `eval run` reviews only what
 the specs found there govern), reviewers, curator, ignore,
-specFilePattern, and the spec-layer fields (expertsDir, practicesDir,
+specFilePattern, templateFilePattern, and the spec-layer fields
+(expertsDir, practicesDir,
 agentProfilesOutputDir, plugins).
 
 The version pin is enforced on every command: a config without one

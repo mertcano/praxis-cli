@@ -296,6 +296,13 @@ A brace pattern accepts more than one convention — this one discovers both dir
 { "specFilePattern": "{README.md,*.expert.md}" }
 ```
 
+## `templateFilePattern`
+
+**Type:** `string | false`
+**Default:** `"_*.md"`
+
+The filename or glob pattern for templates, which are never reviewed or compiled. `false` disables it.
+
 ---
 
 ## See also

@@ -4,8 +4,8 @@ import type { AddDocumentResult, StoreProblem } from "@/types.js";
 import fg from "fast-glob";
 
 import { errors } from "@/helpers/errors-helper.js";
-import { exists, matchesFilename, readText, writeText } from "@/helpers/files-helper.js";
-import { baseName, joinPath, relativePath } from "@/helpers/paths-helper.js";
+import { exists, isContentFile, readText, writeText } from "@/helpers/files-helper.js";
+import { joinPath, relativePath } from "@/helpers/paths-helper.js";
 import { kebabToTitleCase } from "@/helpers/text-helper.js";
 import { ExpertFile } from "@/models/expert-file.js";
 import expertFileTemplate from "@/templates/expert-file-template.js";
@@ -24,12 +24,14 @@ export class ExpertStore {
   private readonly root: string;
   private readonly expertsDir: string;
   private readonly specFilePattern: string;
+  private readonly templateFilePattern: string | false;
   private readonly ignore: string[];
 
   constructor(cfg: PraxisConfig) {
     this.root = cfg.root;
     this.expertsDir = cfg.expertsDir;
     this.specFilePattern = cfg.specFilePattern;
+    this.templateFilePattern = cfg.templateFilePattern;
     this.ignore = cfg.absoluteIgnore;
   }
 
@@ -39,8 +41,7 @@ export class ExpertStore {
 
     return fg
       .sync("*.md", { cwd: this.expertsDir, onlyFiles: true, absolute: true, ignore: this.ignore })
-      .filter((path) => !matchesFilename(path, this.specFilePattern))
-      .filter((path) => !baseName(path).startsWith("_"))
+      .filter((path) => isContentFile(path, this.specFilePattern, this.templateFilePattern))
       .sort();
   }
 

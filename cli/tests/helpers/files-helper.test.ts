@@ -198,27 +198,39 @@ describe("matchesFilename", () => {
 
 describe("isContentFile", () => {
   it("accepts an ordinary target file", () => {
-    expect(isContentFile("/p/src/awards.ts", "README.md")).toBe(true);
+    expect(isContentFile("/p/src/awards.ts", "README.md", "_*.md")).toBe(true);
   });
 
   it("rejects the spec itself — direction is never a target of itself", () => {
-    expect(isContentFile("/p/src/README.md", "README.md")).toBe(false);
+    expect(isContentFile("/p/src/README.md", "README.md", "_*.md")).toBe(false);
   });
 
   it("rejects a spec matched by a glob pattern", () => {
-    expect(isContentFile("/p/docs/services.sme.md", "*.sme.md")).toBe(false);
+    expect(isContentFile("/p/docs/services.sme.md", "*.sme.md", "_*.md")).toBe(false);
   });
 
-  it("rejects an underscore-prefixed file as a template", () => {
-    expect(isContentFile("/p/src/_template.md", "README.md")).toBe(false);
+  it("rejects a file matching the template pattern", () => {
+    expect(isContentFile("/p/src/_template.md", "README.md", "_*.md")).toBe(false);
+  });
+
+  it("accepts an underscore-prefixed file the template pattern does not match", () => {
+    expect(isContentFile("/p/app/views/_form.html.erb", "README.md", "_*.md")).toBe(true);
+  });
+
+  it("rejects no templates when the template pattern is false", () => {
+    expect(isContentFile("/p/src/_template.md", "README.md", false)).toBe(true);
+  });
+
+  it("rejects a file matching a custom template pattern", () => {
+    expect(isContentFile("/p/src/draft-guide.md", "README.md", "draft-*.md")).toBe(false);
   });
 
   it("reviews a file whose directory is underscore-prefixed", () => {
     // The rule is about the filename, not the path it sits under.
-    expect(isContentFile("/p/_scratch/real.ts", "README.md")).toBe(true);
+    expect(isContentFile("/p/_scratch/real.ts", "README.md", "_*.md")).toBe(true);
   });
 
   it("does not confuse a spec-like name elsewhere in the path", () => {
-    expect(isContentFile("/p/README.md/actual.ts", "README.md")).toBe(true);
+    expect(isContentFile("/p/README.md/actual.ts", "README.md", "_*.md")).toBe(true);
   });
 });

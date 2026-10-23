@@ -303,6 +303,26 @@ describe("PraxisConfig", () => {
     });
   });
 
+  describe("templateFilePattern", () => {
+    it("defaults to underscore-prefixed markdown", () => {
+      const cfg = PraxisConfig.inMemory(makeTmpdir());
+
+      expect(cfg.templateFilePattern).toBe("_*.md");
+    });
+
+    it("loads a custom pattern", () => {
+      const cfg = PraxisConfig.inMemory(makeTmpdir(), { templateFilePattern: "draft-*.md" });
+
+      expect(cfg.templateFilePattern).toBe("draft-*.md");
+    });
+
+    it("keeps false, which skips no templates", () => {
+      const cfg = PraxisConfig.inMemory(makeTmpdir(), { templateFilePattern: false });
+
+      expect(cfg.templateFilePattern).toBe(false);
+    });
+  });
+
   describe("specFilePattern", () => {
     it("loads a top-level specFilePattern", () => {
       const dir = makeTmpdir();

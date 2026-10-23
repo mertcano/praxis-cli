@@ -103,6 +103,27 @@ describe("resolveUnitsService", () => {
     expect(units.every((u) => u.path.endsWith(".md"))).toBe(true);
   });
 
+  it("skips a template beside its spec", () => {
+    const { units } = unitsOf({
+      "src/guides/README.md": "# Guides\n",
+      "src/guides/getting-started.md": "# Getting started\n",
+      "src/guides/_new-guide-template.md": "# Template\n",
+    });
+
+    expect(units).toHaveLength(1);
+    expect(units[0]?.path.endsWith("getting-started.md")).toBe(true);
+  });
+
+  it("keeps an underscore-prefixed cohort member, like a Rails partial", () => {
+    const { units } = unitsOf({
+      "src/views/README.md": '---\ncohort: by_directory\npaths:\n  - "src/views/*"\n---\n\n# V\n',
+      "src/views/orders/show.html.erb": "<p>show</p>\n",
+      "src/views/orders/_form.html.erb": "<form></form>\n",
+    });
+
+    expect(units[0]?.files).toHaveLength(2);
+  });
+
   it("never makes the spec file a unit of itself", () => {
     const { units } = unitsOf({ "src/docs/README.md": "# Docs\n", "src/docs/guide.md": "# G\n" });
 

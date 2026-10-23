@@ -25,6 +25,7 @@ interface NormalizedConfig {
   /** Null until configured; triage and curate refuse without it. */
   curator: CuratorConfig | null;
   specFilePattern: string;
+  templateFilePattern: string | false;
 }
 
 /** Where targets are looked for, and what never counts as one. */
@@ -41,6 +42,8 @@ interface DiscoveryScope {
 
 /** Default spec file pattern when none is configured. */
 export const DEFAULT_SPEC_FILE_PATTERN = "README.md";
+
+export const DEFAULT_TEMPLATE_FILE_PATTERN = "_*.md";
 
 /** Default inference endpoint when a reviewer declares no baseUrl. */
 export const DEFAULT_REVIEWER_BASE_URL = "https://openrouter.ai/api/v1";
@@ -63,6 +66,7 @@ const DEFAULT_CONFIG: NormalizedConfig = {
   reviewers: [],
   curator: null,
   specFilePattern: DEFAULT_SPEC_FILE_PATTERN,
+  templateFilePattern: DEFAULT_TEMPLATE_FILE_PATTERN,
 };
 
 /**
@@ -173,6 +177,10 @@ export class PraxisConfig {
     return this.data.specFilePattern;
   }
 
+  get templateFilePattern(): string | false {
+    return this.data.templateFilePattern;
+  }
+
   /**
    * The scope a full run covers, projected from this config.
    *
@@ -228,6 +236,7 @@ export class PraxisConfig {
       reviewers: this.normalizeReviewers(raw),
       curator: this.normalizeCurator(raw),
       specFilePattern: raw.specFilePattern ?? DEFAULT_SPEC_FILE_PATTERN,
+      templateFilePattern: raw.templateFilePattern ?? DEFAULT_TEMPLATE_FILE_PATTERN,
     };
   }
 

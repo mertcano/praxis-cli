@@ -30,12 +30,14 @@ export class DocumentStore {
   private readonly root: string;
   private readonly sources: string[];
   private readonly specFilePattern: string;
+  private readonly templateFilePattern: string | false;
   private readonly ignore: string[];
 
   constructor(cfg: PraxisConfig) {
     this.root = cfg.root;
     this.sources = cfg.sources;
     this.specFilePattern = cfg.specFilePattern;
+    this.templateFilePattern = cfg.templateFilePattern;
     this.ignore = cfg.absoluteIgnore;
   }
 
@@ -65,7 +67,7 @@ export class DocumentStore {
           dot: true,
           ignore: this.ignore,
         })
-        .filter((file) => isContentFile(file, this.specFilePattern)),
+        .filter((file) => isContentFile(file, this.specFilePattern, this.templateFilePattern)),
     );
   }
 
